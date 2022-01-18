@@ -15,7 +15,7 @@ exports.code9993= (res)=> {
 exports.code9994=(res)=> {
     res.send(JSON.stringify({
       code: "9994",
-      message: 'Node data or end of list data'
+      message: 'No data or end of list data'
     }));
 }
 
