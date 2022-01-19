@@ -202,6 +202,39 @@ let setState = (id, state) => {
     }));
 }
 
+
+let addBlock = (id, dataBlock) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.addBlock(id, dataBlock);
+            if (user.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let delUser = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.delUser(id_user);
+            if (user.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports={
     getAllUser:getAllUser,
     checkphoneuser:checkphoneuser,
@@ -213,5 +246,7 @@ module.exports={
     updateAdminUser:updateAdminUser,
     getListUser:getListUser,
     setRole:setRole,
-    setState:setState
+    setState:setState,
+    addBlock:addBlock,
+    delUser:delUser
 }

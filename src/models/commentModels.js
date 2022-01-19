@@ -66,4 +66,36 @@ Comment.editComment = (id_com, comment) =>{
     }));
 }
 
+Comment.getCountComment = () =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`SELECT COUNT(id) AS NumberOfComment FROM comment`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res[0].NumberOfComment);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+Comment.getListCommentByUserId = (id_user) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query('SELECT * FROM comment WHERE user_id = ?', id_user, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports = Comment;

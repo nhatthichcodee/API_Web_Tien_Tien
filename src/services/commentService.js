@@ -28,7 +28,7 @@ let getListCommentById = (postCheckId, index, count) => {
                             dataListComment.push({
                                 id: dataComment.id + "",
                                 comment: dataComment.comment,
-                                created: dataComment.created +'',
+                                created: dataComment.created + '',
                                 poster: {
                                     id: userAuthor.id + "",
                                     name: userAuthor.username,
@@ -79,9 +79,9 @@ let checkCommentByid = (id) => {
     return new Promise((async (resolve, reject) => {
         try {
             let comment = await commentModel.checkCommentByid(id);
-            if (comment.length != 0) { 
+            if (comment.length != 0) {
                 resolve(comment[0]);
-            }else{
+            } else {
                 resolve(null);
             }
         } catch (e) {
@@ -90,15 +90,15 @@ let checkCommentByid = (id) => {
     }))
 }
 
-let deleteComment = (postCheckId,id_com) => {
+let deleteComment = (postCheckId, id_com) => {
     return new Promise((async (resolve, reject) => {
         try {
             let comment = await commentModel.deleteComment(id_com);
             if (comment.affectedRows == 1) {
-                let deleteCommentPost = postService.deleteCommentPost(postCheckId,id_com)
+                let deleteCommentPost = postService.deleteCommentPost(postCheckId, id_com)
                 if (deleteCommentPost != null) {
                     resolve(deleteCommentPost)
-                }else{
+                } else {
                     resolve(null)
                 }
             }
@@ -109,15 +109,72 @@ let deleteComment = (postCheckId,id_com) => {
             reject(e);
         }
     }))
-} 
+}
 
-let editComment = (id_com,comment) => {
+let deleteCommentAdmin = (id_com) => {
     return new Promise((async (resolve, reject) => {
         try {
-            let commentEdit = await commentModel.editComment(id_com,comment);
-            if (commentEdit.changedRows == 1) { 
+            var listDataPost = await postService.getAllPost()
+            for (let i = 0; i < listDataPost.length; i++) {
+                if (listDataPost[i].comment_id.includes(id_com)) {
+                    var dataCommentPost = JSON.parse(listDataPost[i].comment_id)
+                    dataCommentPost.comment.splice(dataCommentPost.comment.indexOf(id_com))
+                    await postService.addComment(listDataPost[i].id, JSON.stringify(dataCommentPost))
+                }
+            }
+            let comment = await commentModel.deleteComment(id_com);
+            if (comment.affectedRows == 1) {
                 resolve(true)
-            }else{
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+
+let editComment = (id_com, comment) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let commentEdit = await commentModel.editComment(id_com, comment);
+            if (commentEdit.changedRows == 1) {
+                resolve(true)
+            } else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+let getCountComment = () => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let countComment = await commentModel.getCountComment();
+            if (countComment != null) {
+                resolve(countComment);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+let getListCommentByUserId = (user_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let listComment = await commentModel.getListCommentByUserId(user_id);
+            if (listComment != null) {
+                resolve(listComment);
+            }
+            else {
                 resolve(null);
             }
         } catch (e) {
@@ -138,7 +195,10 @@ let a = () => {
 module.exports = {
     getListCommentById: getListCommentById,
     addComment: addComment,
-    checkCommentByid:checkCommentByid,
-    deleteComment:deleteComment,
-    editComment:editComment
+    checkCommentByid: checkCommentByid,
+    deleteComment: deleteComment,
+    editComment: editComment,
+    getCountComment: getCountComment,
+    getListCommentByUserId: getListCommentByUserId,
+    deleteCommentAdmin: deleteCommentAdmin
 }

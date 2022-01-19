@@ -58,7 +58,7 @@ let checkPostById = (userCheckToken, id, type) => {
                 }
                 var userAuthor = await userService.checkUserById(postCheckId.user_id);
                 var isblocked = 0;
-                if (JSON.parse(userAuthor.block_id) != null) {
+                if (userAuthor.block_id != null && userAuthor.block_id != '') {
                     for (let index = 0; index < JSON.parse(userAuthor.block_id).block.length; index++) {
                         if (JSON.parse(userAuthor.block_id).block[index] == userCheckToken.id) {
                             isblocked = 1;
@@ -69,7 +69,7 @@ let checkPostById = (userCheckToken, id, type) => {
                 var dataGetPost = {
                     id: postCheckId.id + "",
                     described: postCheckId.described,
-                    created: postCheckId.created_at +'',
+                    created: postCheckId.created_at + '',
                     modified: postCheckId.modified,
                     like: like + "",
                     comment: comment + "",
@@ -133,7 +133,7 @@ let updatePost = (id, desPost, mediaPost) => {
     }));
 }
 
-let deletePost = (id) =>{
+let deletePost = (id) => {
     return new Promise((async (resolve, reject) => {
         try {
             let post = await postModel.deletePost(id);
@@ -152,7 +152,7 @@ let deletePost = (id) =>{
 let reportPost = async (id_post, id_user) => {
     return new Promise((async (resolve, reject) => {
         try {
-            let postReport = await postModel.reportPost(id_post,id_user);
+            let postReport = await postModel.reportPost(id_post, id_user);
             if (postReport != null && postReport != undefined) {
                 if (postReport.length != 0) {
                     resolve(true);
@@ -192,7 +192,7 @@ let deleteCommentPost = async (postCheckId, id_com) => {
     return new Promise((async (resolve, reject) => {
         try {
             var dataCommentPost = JSON.parse(postCheckId.comment_id)
-            dataCommentPost.comment.splice(dataCommentPost.comment.indexOf(id_com.toString()),1)
+            dataCommentPost.comment.splice(dataCommentPost.comment.indexOf(id_com.toString()), 1)
             let updateCommentPost = await postModel.updateCommentPost(JSON.stringify(dataCommentPost), postCheckId.id)
             if (updateCommentPost != null) {
                 resolve(updateCommentPost)
@@ -223,14 +223,82 @@ let addLike = async (id, dataLike) => {
 
 }
 
+let getAllPost = () => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let data = await postModel.getAll();
+            if (data != null) {
+                resolve(data);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let getListPostByUserId = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let data = await postModel.getListPostByUserId(id_user);
+            if (data != null) {
+                resolve(data);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let addComment = async (id, dataComment) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let post = await postModel.addComment(id, dataComment);
+            if (post.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let delReport = async (user_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let post = await postModel.delReport(user_id);
+            if (post.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports = {
+    getAllPost: getAllPost,
     addPost: addPost,
     checkPostById: checkPostById,
     getCountPost: getCountPost,
     updatePost: updatePost,
-    deletePost:deletePost,
-    reportPost:reportPost,
-    addReportPost:addReportPost,
-    deleteCommentPost:deleteCommentPost,
-    addLike:addLike
+    deletePost: deletePost,
+    reportPost: reportPost,
+    addReportPost: addReportPost,
+    deleteCommentPost: deleteCommentPost,
+    addLike: addLike,
+    getListPostByUserId: getListPostByUserId,
+    addComment: addComment,
+    delReport:delReport
 }

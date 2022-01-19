@@ -44,7 +44,6 @@ User.addUser = (data) => {
                     resolve({ id: res.insertId, ...data });
                 }
             })
-
         } catch (e) {
             reject(e);
         }
@@ -151,6 +150,38 @@ User.setState = (id,state) =>{
     return new Promise((async (resolve, reject) => {
         try {
             db.query(`UPDATE user SET state ='${state}' WHERE id = '${id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.addBlock = (id,dataBlock) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET block_id = '${dataBlock}'  WHERE id = '${id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.delUser = (user_id) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM user WHERE id= '${user_id}'`, (err, res) => {
                 if (err) {
                     Error.code1001(res);
                 } else {

@@ -185,6 +185,33 @@ let deleteConversation = (conversation_id) => {
     }));
 }
 
+let getListConversationByIDAdmin = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let data = await chatModel.getListConversationByID(id_user);
+            if (data.length != null) {
+                resolve(data)
+            }else{
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteConversationAdmin = (listConversation) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            for (let i = 0; i < listConversation.length; i++) {
+                await deleteConversation(listConversation[i].id)
+            }
+            resolve(true)
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
 let a = (index, count, idUser) => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -204,5 +231,7 @@ module.exports = {
     getChatByConversationId:getChatByConversationId,
     getChatByMessId:getChatByMessId,
     deleteChat:deleteChat,
-    deleteConversation:deleteConversation
+    deleteConversation:deleteConversation,
+    getListConversationByIDAdmin:getListConversationByIDAdmin,
+    deleteConversationAdmin:deleteConversationAdmin
 }

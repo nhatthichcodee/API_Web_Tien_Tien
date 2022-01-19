@@ -16,7 +16,7 @@ let getListFriend = (id) => {
                     listIdFriend.push(dataListFriend[i].id_user_1 == id ? dataListFriend[i].id_user_2 : dataListFriend[i].id_user_1)
                 }
                 resolve(listIdFriend)
-            }else{
+            } else {
                 resolve(null)
             }
         } catch (e) {
@@ -25,7 +25,7 @@ let getListFriend = (id) => {
     }))
 }
 
-let getListPostByListIdFriend = (listFriend)=> {
+let getListPostByListIdFriend = (listFriend) => {
     return new Promise((async (resolve, reject) => {
         try {
             var dataListPost = []
@@ -44,6 +44,101 @@ let getListPostByListIdFriend = (listFriend)=> {
     }))
 }
 
+let delAllFriend = (user_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let friend = await friendModel.dellAllFriend(user_id);
+            if (friend.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+
+let getRquestFriendById = (id_user, index = null, count = null) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            var data = await friendModel.getRquestFriendById(id_user)
+            if (data.length != 0) {
+                if (index > data.length || index < 0) {
+                    resolve(null)
+                } else {
+                    var dataUserRequest = []
+                    for (let i = index; i < data.length; i++) {
+                        if (i < index + count) {
+                            var user = await userService.checkUserById(data[i].id_user_send)
+                            dataUserRequest.push({
+                                id: user.id + '',
+                                username: user.username,
+                                avatar: user.link_avatar,
+                                created: data[i].created + ''
+                            })
+                        }
+                    }
+                    resolve(dataUserRequest)
+                }
+            } else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+let getRequestFriendBy2Id = (id_user_send,id_user_receiver) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            var data = await friendModel.getRequestFriendBy2Id(id_user_send,id_user_receiver)
+            if (data.length != 0) {
+                resolve(data[0])
+            } else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+let addFriend = (data) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let friend = await friendModel.addFriend(data);
+            if (friend.id != 0) {
+                resolve(friend);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteRequestById = (id_request) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let requestFriend = await friendModel.deleteRequestById(id_request);
+            if (requestFriend.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 let a = () => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -55,6 +150,11 @@ let a = () => {
 }
 
 module.exports = {
-    getListFriend:getListFriend,
-    getListPostByListIdFriend:getListPostByListIdFriend
+    getListFriend: getListFriend,
+    getListPostByListIdFriend: getListPostByListIdFriend,
+    delAllFriend: delAllFriend,
+    getRquestFriendById: getRquestFriendById,
+    getRequestFriendBy2Id:getRequestFriendBy2Id,
+    addFriend:addFriend,
+    deleteRequestById:deleteRequestById
 }

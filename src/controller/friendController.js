@@ -110,48 +110,84 @@ let get_user_friends = async (req, res) => {
     })
 }
 
-let set_user_state = async (req, res) => {
+let getRquestFriend = async (req, res) => {
     var upload = multer({ storage: storage }).none();
     upload(req, res, async (err) => {
         var token = req.body.token;
-        var role_key = req.body.role_key;
         var user_id = req.body.user_id;
-        var state = req.body.state;
-        if (role_key == undefined || token == undefined || user_id == undefined || state == undefined || role_key == null || token == null || user_id == null || state == null || role_key == '' || token == '' || user_id == '' || state == '') {
+        var index = req.body.index;
+        var count = req.body.count;
+        if (token === undefined ||  index == undefined || count == undefined || token === null || index == null || count == null || token === ''  || index == '' || count == '') {
             Error.code1002(res);
         } else {
             var userCheckToken = await userService.checkUserByToken(token);
             if (userCheckToken !== null) {
-                if (userCheckToken.role_key == role_key) {
-                    var user2 = await userService.checkUserById(user_id)
-                    if (user2 == null) {
-                        Error.code1004(res)
-                    }else{
-                        if ( user2.role >= userCheckToken.role ) {
-                            Error.code1009(res)
-                        }else{
-                            var userSetState = await userService.setState(user_id,state)
-                            if (userSetState != null) {
-                                res.send(JSON.stringify({
-                                    code: "1000",
-                                    message: 'ok',
-                                }))
-                            }else{
-                                Error.code9999(res)
-                            }
-                        }
+                var idUserCheck = userCheckToken.id
+                if (userCheckToken.role > 0) {
+                    if (!(user_id === undefined || user_id == null || user_id == '')) {
+                        idUserCheck = user_id
                     }
-                }else{
-                    Error.code1004(res)
                 }
-            } else {
+                var dataRequest = await friendService.getRquestFriendById(idUserCheck,parseInt(index),parseInt(count))
+                if (dataRequest == null) {
+                    Error.code9994(res)
+                }else{
+                    res.send(JSON.stringify({
+                        code: "1000",
+                        message: 'ok',
+                        data: {
+                            friends:dataRequest
+                        }
+                    }))
+                }
+            }else{
                 Error.code9998(res)
             }
         }
     })
 }
 
-
+let setAcceptFriend = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var user_id = req.body.user_id;
+        var is_accept = req.body.is_accept;
+        if (token === undefined ||  user_id == undefined || is_accept == undefined || token === null || user_id == null || is_accept == null || token === ''  || user_id == '' || is_accept == '') {
+            Error.code1002(res);
+        } else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken !== null) {
+                var dataRequest = await friendService.getRequestFriendBy2Id(user_id,userCheckToken.id)
+                if (dataRequest == null) {
+                    Error.code1004(res)
+                }else{
+                    if (is_accept == '0' ||is_accept == '1') {
+                        if (is_accept == '1') {
+                            await friendService.addFriend({
+                                id_user_1:parseInt(user_id),
+                                id_user_2:userCheckToken.id
+                            })
+                        }
+                        var deleteRequest = await friendService.deleteRequestById(dataRequest.id)
+                        if (deleteRequest == true) {
+                            res.send(JSON.stringify({
+                                code: "1000",
+                                message: 'ok',
+                            }))
+                        }else{
+                            Error.code1005(res)
+                        }
+                    }else{
+                        Error.code1004(res)
+                    }
+                }
+            }else{
+                Error.code9998(res)
+            }
+        }
+    })
+}
 
 
 let a = async (req, res) => {
@@ -164,5 +200,6 @@ let a = async (req, res) => {
 module.exports = {
     search: search,
     get_user_friends: get_user_friends,
-    set_user_state: set_user_state
+    getRquestFriend:getRquestFriend,
+    setAcceptFriend:setAcceptFriend
 }

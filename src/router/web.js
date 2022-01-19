@@ -40,8 +40,16 @@ let initWebRouter = function (app) {
   // Tuần 5
   app.post('/api/post/search', friendsController.search);
   app.post('/api/friend/get_user_friends', friendsController.get_user_friends)
-  app.post('/api/friend/set_user_state', friendsController.set_user_state)
+  app.post('/api/admin/set_user_state', adminController.set_user_state)
+  app.post('/api/admin/delete_user', adminController.delete_user)
+  app.post('/api/admin/get_basic_user_info', adminController.get_basic_user_info)
+
+  // Tuần 6
+  //app.post('/api/friend/set_request_friend', friendscontroller.setRquestFriend);
+  app.post('/api/friend/get_requested_friend', friendsController.getRquestFriend);
+  app.post('/api/friend/set_accept_friend', friendsController.setAcceptFriend);
+  //app.post('/friend/getuserinfo', friendscontroller.getUserInfo);
 }
 module.exports = {
     initWebRouter: initWebRouter,
-  }
+}
