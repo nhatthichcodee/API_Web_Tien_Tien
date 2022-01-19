@@ -16,6 +16,33 @@ let getAllUser = () => {
     }));
 }
 
+let getListUser = (index, count) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let data = await userModel.getAll();
+            if (data != null) {
+                var dataListUser = []
+                for (let i = index ; i < data.length; i++) {
+                    if (i < index + count) {
+                        dataListUser.push({
+                            user_id:data[i].id+'',
+                            username:data[i].username,
+                            avatar:data[i].link_avatar,
+                            is_avtive: data[i].token == null || data[i].token == "null" ? "0" : "1"
+                        })
+                    }
+                }
+                resolve(dataListUser);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 let checkphoneuser = (phonenumber) => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -127,6 +154,54 @@ let checkUserById = (Id) =>{
     }));
 }
 
+let updateAdminUser = (id_admin, token) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.updateAdminUser(id_admin, token);
+            if (user.changedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let setRole = (id, role) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.setRoleUser(id, role);
+            if (user.changedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let setState = (id, state) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.setState(id, state);
+            if (user.changedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports={
     getAllUser:getAllUser,
     checkphoneuser:checkphoneuser,
@@ -135,4 +210,8 @@ module.exports={
     updateTokenUser:updateTokenUser,
     checkUserByToken:checkUserByToken,
     checkUserById:checkUserById,
+    updateAdminUser:updateAdminUser,
+    getListUser:getListUser,
+    setRole:setRole,
+    setState:setState
 }

@@ -115,4 +115,52 @@ User.checkUserById = (Id) =>{
     }));
 }
 
+User.updateAdminUser = (id_admin,token) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET role_key ='${token}' WHERE id = '${id_admin}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.setRoleUser = (id,role) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET role ='${role}' WHERE id = '${id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.setState = (id,state) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET state ='${state}' WHERE id = '${id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports = User;

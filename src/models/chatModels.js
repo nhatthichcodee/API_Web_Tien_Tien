@@ -98,4 +98,68 @@ Chat.getChatByConversationId = (id) => {
         }
     }));
 };
+
+Chat.getChatByMessId = (id_mess) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`SELECT * FROM chat WHERE id_message = '${id_mess}' `, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+};
+
+Chat.deleteChat = (id_mess) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM chat WHERE id_message = '${id_mess}' `, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+Chat.dellAllChat = (conversation_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM chat WHERE id_conversation = '${conversation_id}' `, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+Chat.deleteConversation = (conversation_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM conversation WHERE id = '${conversation_id}' `, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
 module.exports = Chat;

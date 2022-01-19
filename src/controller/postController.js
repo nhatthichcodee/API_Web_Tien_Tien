@@ -38,6 +38,8 @@ let addPost = async (req, res) => {
                 else if (typeMedia === 'video' && totalVideo > 10485760) {
                     Error.code1006(res)
                 } else {
+                    let date = new Date();
+                    let seconds = date.getTime()/1000 | 0;
                     //console.log(Media)
                     var userCheckToken = await userService.checkUserByToken(token);
                     if (userCheckToken != null) {
@@ -46,7 +48,7 @@ let addPost = async (req, res) => {
                             user_id: userCheckToken.id.toString(),
                             described: described,
                             media: JSON.stringify(Media),
-                            created_at: apiFunction.getDate(),
+                            created_at: seconds,
                             url: url
                         }
                         var newPost = await postService.addPost(newDataPost);

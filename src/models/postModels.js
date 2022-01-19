@@ -2,6 +2,22 @@ const db = require('../config/database')
 const Post = function (post) {
 }
 
+Post.getListPostByIdUser = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query('SELECT * FROM post WHERE user_id = ?', id_user, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+};
+
 Post.addPost = (data) => {
     return new Promise((async (resolve, reject) => {
         try {

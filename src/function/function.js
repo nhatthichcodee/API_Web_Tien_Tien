@@ -16,7 +16,18 @@ let getDate = () =>{
     return date
 }
 
+let getScoreSearch = (dataPost, keyword) =>{
+    var listKeyWord = keyword.split(' ')
+    var score = 0;
+    for (let i = 0; i < listKeyWord.length; i++) {
+        score += (dataPost.split(listKeyWord[i]).length - 1)
+    }
+    return score
+}
+
+
 module.exports={
     MD5:MD5,
     getDate:getDate,
+    getScoreSearch:getScoreSearch,
 }

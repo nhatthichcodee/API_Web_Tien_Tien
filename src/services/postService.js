@@ -69,7 +69,7 @@ let checkPostById = (userCheckToken, id, type) => {
                 var dataGetPost = {
                     id: postCheckId.id + "",
                     described: postCheckId.described,
-                    created: postCheckId.created_at,
+                    created: postCheckId.created_at +'',
                     modified: postCheckId.modified,
                     like: like + "",
                     comment: comment + "",

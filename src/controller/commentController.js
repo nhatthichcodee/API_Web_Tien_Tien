@@ -59,7 +59,7 @@ let addComment = async (req, res) => {
                 var postCheckId = await postService.checkPostById(userCheckToken, id, 2);
                 if (postCheckId !== null) {
                     let date = new Date();
-                    let seconds = date.getTime();
+                    let seconds = date.getTime()/1000 | 0;
                     var newComment = {
                         user_id: userCheckToken.id,
                         comment: comment,

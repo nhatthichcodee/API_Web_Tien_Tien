@@ -28,7 +28,7 @@ let getListCommentById = (postCheckId, index, count) => {
                             dataListComment.push({
                                 id: dataComment.id + "",
                                 comment: dataComment.comment,
-                                created: dataComment.created,
+                                created: dataComment.created +'',
                                 poster: {
                                     id: userAuthor.id + "",
                                     name: userAuthor.username,

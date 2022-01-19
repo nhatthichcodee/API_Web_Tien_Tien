@@ -2,6 +2,9 @@ const userController= require('../controller/userController');
 const postController= require('../controller/postController');
 const commentController= require('../controller/commentController');
 const chatController= require('../controller/chatController');
+const adminController= require('../controller/adminController');
+const friendsController = require('../controller/friendController');
+
 let initWebRouter = function (app) {
 
   // Tuần 1
@@ -28,10 +31,16 @@ let initWebRouter = function (app) {
   // Tuần 4
   app.post('/api/chat/getlistconversation', chatController.getListConversation);
   app.post('/api/chat/getconversation', chatController.getConversation);
-  // app.post('/chat/deletemessage', chatcontroller.deletemessage);
-  // app.post('/chat/deleteconversation', chatcontroller.deleteConversation);
-  // app.post('/admin/getAdminPermission', admincontroller.getAdminPermission);
-  // app.post('/admin/setrole', admincontroller.setRole);
+  app.post('/api/chat/deletemessage', chatController.deleteMessage);
+  app.post('/api/chat/deleteconversation', chatController.deleteConversation);
+  app.post('/api/admin/getAdminPermission', adminController.getAdminPermission);
+  app.post('/api/admin/getUserList', adminController.getUserList);
+  app.post('/api/admin/setrole', adminController.setRole);
+
+  // Tuần 5
+  app.post('/api/post/search', friendsController.search);
+  app.post('/api/friend/get_user_friends', friendsController.get_user_friends)
+  app.post('/api/friend/set_user_state', friendsController.set_user_state)
 }
 module.exports = {
     initWebRouter: initWebRouter,

@@ -41,7 +41,7 @@ let getListConversationByID = (index, count, idUser) => {
                             },
                             lastmessage: dataLastMess == null ? null : {
                                 message: dataLastMess.message,
-                                created: dataLastMess.created,
+                                created: dataLastMess.created + '',
                                 uread: dataLastMess.unread + ""
                             }
                         })
@@ -117,19 +117,65 @@ let getChatByConversationId = (id,index,count,user1,user2) => {
                             conversation:{
                                 message_id: listChat[i].id_message +'',
                                 message: listChat[i].message,
-                                unread: listChat[i].unread,
-                                created: listChat[i].created,
+                                unread: listChat[i].unread+'',
+                                created: listChat[i].created+'',
                                 sender: {
-                                    id: userSenderData.id,
+                                    id: userSenderData.id+'',
                                     username: userSenderData.username,
                                     avatar: userSenderData.link_avatar
                                 }
                             },
-                            is_blocked : is_blocked
+                            is_blocked : is_blocked +''
                         })
                     }
                 }
                 resolve(listDataChat)
+            }else{
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let getChatByMessId = (id_mess) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            var chat = await chatModel.getChatByMessId(id_mess)
+            if (chat.length != 0) {
+                resolve(chat[0])
+            }else{
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteChat = (id_mess) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            var delChat = await chatModel.deleteChat(id_mess)
+            if (delChat.affectedRows == 1) {
+                resolve(true)
+            }else{
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteConversation = (conversation_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            await chatModel.dellAllChat(conversation_id)
+            var deleteConversation = await chatModel.deleteConversation(conversation_id)
+            if (deleteConversation.affectedRows == 1) {
+                resolve(true)
             }else{
                 resolve(null)
             }
@@ -155,5 +201,8 @@ module.exports = {
     getListConversationByID: getListConversationByID,
     getConversationIdByUser:getConversationIdByUser,
     getConversationUserById:getConversationUserById,
-    getChatByConversationId:getChatByConversationId
+    getChatByConversationId:getChatByConversationId,
+    getChatByMessId:getChatByMessId,
+    deleteChat:deleteChat,
+    deleteConversation:deleteConversation
 }
