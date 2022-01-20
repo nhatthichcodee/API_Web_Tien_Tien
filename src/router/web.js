@@ -36,9 +36,9 @@ let initWebRouter = function (app) {
   app.post('/api/admin/getAdminPermission', adminController.getAdminPermission);
   app.post('/api/admin/getUserList', adminController.getUserList);
   app.post('/api/admin/setrole', adminController.setRole);
-
+  app.get('/api/admin/login', adminController.loginAdmin);
   // Tuần 5
-  app.post('/api/post/search', friendsController.search);
+  app.post('/api/post/search', postController.search);
   app.post('/api/friend/get_user_friends', friendsController.get_user_friends)
   app.post('/api/admin/set_user_state', adminController.set_user_state)
   app.post('/api/admin/delete_user', adminController.delete_user)
@@ -49,6 +49,13 @@ let initWebRouter = function (app) {
   app.post('/api/friend/set_accept_friend', friendsController.setAcceptFriend);
   app.post('/api/friend/set_request_friend', friendsController.setRequestFriend);
   app.post('/api/friend/getuserinfo', friendsController.getUserInfo);
+
+  // Tuần 7
+  app.post('/api/user/setblockuser', userController.setBlockUser);
+  app.post('/api/user/setblockdiary', userController.setBlockDiary);
+  app.post('/api/user/getverifycode', userController.getVerifyCode);
+  app.post('/api/user/checkverifycode', userController.checkVerifyCode);
+  app.post('/api/user/del_saved_search',userController.deleteSavedSearch);
 }
 module.exports = {
     initWebRouter: initWebRouter,

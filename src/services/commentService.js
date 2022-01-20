@@ -1,8 +1,7 @@
 const postModel = require('../models/postModels');
-const userService = require('../services/userService');
+const userService = require('./userService');
 const postService = require('../services/postService');
 const commentModel = require('../models/commentModels');
-const apiFunction = require('../function/function');
 
 let getListCommentById = (postCheckId, index, count) => {
     return new Promise((async (resolve, reject) => {

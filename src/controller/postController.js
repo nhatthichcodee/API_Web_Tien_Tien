@@ -39,7 +39,7 @@ let addPost = async (req, res) => {
                     Error.code1006(res)
                 } else {
                     let date = new Date();
-                    let seconds = date.getTime()/1000 | 0;
+                    let seconds = date.getTime() / 1000 | 0;
                     //console.log(Media)
                     var userCheckToken = await userService.checkUserByToken(token);
                     if (userCheckToken != null) {
@@ -388,31 +388,81 @@ let addLike = async (req, res) => {
             var userCheckToken = await userService.checkUserByToken(token);
             if (userCheckToken != null) {
                 var postCheckId = await postService.checkPostById(userCheckToken, id, 2);
-                var dataLike = postCheckId.like_id == null ? { "like": [] } : JSON.parse(postCheckId.like_id)
-                if (postCheckId != null) {
-                    if (!dataLike.like.includes(userCheckToken.id.toString())) {
-                        dataLike.like.push(userCheckToken.id.toString())
-                        var addLike = await postService.addLike(id,JSON.stringify(dataLike))
-                        if (addLike == true) {
-                            var postCheckId1 = await postService.checkPostById(userCheckToken, id, 1);
-                            res.send(JSON.stringify({
-                                code: "1000",
-                                message: 'ok',
-                                data:{
-                                    like:postCheckId1.like
-                                }
-                            }))
-                        }else{
-                            Error.code1010(res);
-                        }
-                    }else{
-                        Error.code9997(res);
-                    }
+                if (postCheckId == null) {
+                    Error.code1004(res)
                 } else {
-                    Error.code9992(res)
+                    var dataLike = postCheckId.like_id == null ? { "like": [] } : JSON.parse(postCheckId.like_id)
+                    if (postCheckId != null) {
+                        if (!dataLike.like.includes(userCheckToken.id.toString())) {
+                            dataLike.like.push(userCheckToken.id.toString())
+                            var addLike = await postService.addLike(id, JSON.stringify(dataLike))
+                            if (addLike == true) {
+                                var postCheckId1 = await postService.checkPostById(userCheckToken, id, 1);
+                                res.send(JSON.stringify({
+                                    code: "1000",
+                                    message: 'ok',
+                                    data: {
+                                        like: postCheckId1.like
+                                    }
+                                }))
+                            } else {
+                                Error.code1010(res);
+                            }
+                        } else {
+                            Error.code9997(res);
+                        }
+                    } else {
+                        Error.code9992(res)
+                    }
                 }
             } else {
                 Error.code9998(res);
+            }
+        }
+    })
+}
+
+let search = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var keyword = req.body.keyword;
+        var index = req.body.index;
+        var count = req.body.count;
+        if (keyword == undefined || token == undefined || index == undefined || count == undefined || keyword == null || token == null || index == null || count == null || keyword == '' || token == '' || index == '' || count == '') {
+            Error.code1002(res);
+        } else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken !== null) {
+                var dataListPost = await postService.getAllPost()
+                if (dataListPost.length == 0) {
+                    Error.code9994(res)
+                } else {
+                    for (let i = 0; i < dataListPost.length - 1; i++) {
+                        for (let j = i + 1; j < dataListPost.length; j++) {
+                            if (apiFunction.getScoreSearch(dataListPost[i].described, keyword) < apiFunction.getScoreSearch(dataListPost[j].described, keyword)) {
+                                var dataTG = dataListPost[i]
+                                dataListPost[i] = dataListPost[j]
+                                dataListPost[j] = dataTG
+                            }
+                        }
+                    }
+                    var dataRes = []
+                    if (index < dataListPost.length) {
+                        for (let i = parseInt(index); i < dataListPost.length; i++) {
+                            if (i < parseInt(index) + parseInt(count)) {
+                                dataRes.push(await postService.checkPostById(userCheckToken, dataListPost[i].id, 1))
+                            }
+                        }
+                        res.send(JSON.stringify({
+                            code: "1000",
+                            message: 'ok',
+                            data: dataRes
+                        }))
+                    } else {
+                        Error.code9994(res)
+                    }
+                }
             }
         }
     })
@@ -432,5 +482,6 @@ module.exports = {
     editPost: editPost,
     deletePost: deletePost,
     reportPost: reportPost,
-    addLike: addLike
+    addLike: addLike,
+    search: search
 }

@@ -9,6 +9,12 @@ app.use(bodyParser.urlencoded({ extended:false}));
 app.use(bodyParser.json());
 app.use(express.json());
 
+app.use(express.static("./src/public"));
+
+app.engine("ejs", expressEjsExtend)
+app.set("view engine", "ejs");
+app.set("views", "./src/views")
+
 router.initWebRouter(app);
 
 app.listen(port, () => {

@@ -25,9 +25,13 @@ let getScoreSearch = (dataPost, keyword) =>{
     return score
 }
 
+let getRandom = (min,max) =>{
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
 module.exports={
     MD5:MD5,
     getDate:getDate,
     getScoreSearch:getScoreSearch,
+    getRandom:getRandom
 }

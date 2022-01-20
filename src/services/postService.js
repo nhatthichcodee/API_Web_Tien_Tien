@@ -1,6 +1,7 @@
 const postModel = require('../models/postModels');
-const userService = require('../services/userService');
-const apiFunction = require('../function/function');
+const userService = require('./userService');
+
+
 
 let addPost = (dataPost) => {
     return new Promise((async (resolve, reject) => {

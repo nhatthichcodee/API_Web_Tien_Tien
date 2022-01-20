@@ -1,8 +1,4 @@
-const postModel = require('../models/postModels');
-const userService = require('../services/userService');
-const postService = require('../services/postService');
-const commentModel = require('../models/commentModels');
-const apiFunction = require('../function/function');
+const userService = require('./userService');
 const chatModel = require('../models/chatModels');
 const con = require('../config/database');
 

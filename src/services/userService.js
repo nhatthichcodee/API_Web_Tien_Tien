@@ -1,6 +1,8 @@
 
 const userModel= require('../models/userModels');
 const friendService = require('./friendService');
+const apiFunction = require('../function/function');
+
 let getAllUser = () => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -139,21 +141,7 @@ let checkUserByToken = (token) => {
     }));
 }
 
-let checkUserById = (Id) =>{
-    return new Promise((async (resolve, reject) => {
-        try {
-            let user = await userModel.checkUserById(Id);
-            if (user.length != 0) {
-                resolve(user[0]);
-            }
-            else {
-                resolve(null);
-            }
-        } catch (e) {
-            reject(e);
-        }
-    }));
-}
+
 
 let updateAdminUser = (id_admin, token) => {
     return new Promise((async (resolve, reject) => {
@@ -220,6 +208,23 @@ let addBlock = (id, dataBlock) => {
     }));
 }
 
+let addBlockDiary = (id, dataBlockDiary) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.addBlockDiary(id, dataBlockDiary);
+            if (user.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+
 let delUser = (id_user) => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -266,6 +271,121 @@ let getUserInfo = (user_token_id , user_id) =>{
     }));
 }
 
+let getVerify = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let date = new Date();
+            let seconds = date.getTime() / 1000 | 0;
+            var verify_code = apiFunction.getRandom(100000,999999)
+            var dataVerify = {
+                id:id_user,
+                code:verify_code,
+                number_error:0,
+                time_block:0,
+                next_time_request: seconds + 120,
+            }
+            let code = await userModel.getVerify(dataVerify);
+            if (code.id != 0) {
+                resolve(code);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let updateCode = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let date = new Date();
+            let seconds = date.getTime() / 1000 | 0;
+            var verify_code = apiFunction.getRandom(100000,999999)
+            let code = await userModel.updateCode(id_user, verify_code, seconds + 120);
+            if (code.affectedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let checkUserById = (Id) =>{ 
+    return new Promise((async (resolve, reject) => {
+        try {
+
+            let user = await userModel.checkUserById(Id);
+            if (user.length != 0) {
+                resolve(user[0]);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteAllSearch = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let dataDell = await userModel.deleteAllSearch(id_user);
+            if (dataDell.affectedRows != 0) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let checkSearchByIdSearch = (id_search) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let dataSearch = await userModel.checkSearchByIdSearch(id_search);
+            if (dataSearch != null && dataSearch != undefined) {
+                if (dataSearch.length != 0) {
+                    resolve(dataSearch[0]);
+                }
+                else {
+                    resolve(null);
+                }
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let deleteSearchById = (id_search) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let dataDell = await userModel.deleteSearchById(id_search);
+            if (dataDell.affectedRows != 0) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports={
     getAllUser:getAllUser,
     checkphoneuser:checkphoneuser,
@@ -280,5 +400,11 @@ module.exports={
     setState:setState,
     addBlock:addBlock,
     delUser:delUser,
-    getUserInfo:getUserInfo
+    getUserInfo:getUserInfo,
+    addBlockDiary:addBlockDiary,
+    getVerify:getVerify,
+    updateCode:updateCode,
+    deleteAllSearch:deleteAllSearch,
+    checkSearchByIdSearch:checkSearchByIdSearch,
+    deleteSearchById:deleteSearchById
 }

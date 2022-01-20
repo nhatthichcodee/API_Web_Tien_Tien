@@ -178,6 +178,22 @@ User.addBlock = (id,dataBlock) =>{
     }));
 }
 
+User.addBlockDiary = (id,dataBlockDiary) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET block_diary_id = '${dataBlockDiary}'  WHERE id = '${id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 User.delUser = (user_id) =>{
     return new Promise((async (resolve, reject) => {
         try {
@@ -193,5 +209,87 @@ User.delUser = (user_id) =>{
         }
     }));
 }
+
+User.getVerify = (data) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query("INSERT INTO verify_code SET ?", data, (err, res) => {
+                if (err) {
+                    resolve(null);
+                } else {
+                    resolve({ id: res.insertId, ...data });
+                }
+            })
+
+        } catch (e) {
+            reject(e);
+        }
+    }));
+};
+
+User.updateCode = (id_user, verify_code, seconds) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE verify_code SET code ='${verify_code}' , next_time_request = '${seconds}'  WHERE id = '${id_user}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.deleteAllSearch = (user_id) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM saved_search WHERE user_id= '${user_id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.deleteSearchById = (id_search) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`DELETE FROM saved_search WHERE id= '${id_search}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.checkSearchByIdSearch = (id_search) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query('SELECT * FROM saved_search WHERE id = ?', id_search, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 
 module.exports = User;

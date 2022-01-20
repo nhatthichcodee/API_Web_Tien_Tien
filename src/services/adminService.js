@@ -1,9 +1,3 @@
-const postModel = require('../models/postModels');
-const userService = require('../services/userService');
-const postService = require('../services/postService');
-const commentModel = require('../models/commentModels');
-const apiFunction = require('../function/function');
-const chatModel = require('../models/chatModels');
 const adminModel = require('../models/adminModels');
 const con = require('../config/database');
 
@@ -53,5 +47,5 @@ let a = (index, count, idUser) => {
 
 module.exports = {
     getVerifyCode:getVerifyCode,
-    updateErrorVerify:updateErrorVerify
+    updateErrorVerify:updateErrorVerify,
 }

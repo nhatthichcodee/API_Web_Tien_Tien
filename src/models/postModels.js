@@ -2,10 +2,10 @@ const db = require('../config/database')
 const Post = function (post) {
 }
 
-Post.getListPostByIdUser = (id_user) => {
+Post.getListPostByUserId = (id_user) =>{
     return new Promise((async (resolve, reject) => {
         try {
-            db.query('SELECT * FROM post WHERE user_id = ?', id_user, (err, res) => {
+            db.query(`SELECT * FROM post WHERE user_id ='${id_user}'`, (err, res) => {
                 if (err) {
                     Error.code1001(res);
                 } else {
@@ -16,7 +16,7 @@ Post.getListPostByIdUser = (id_user) => {
             reject(e);
         }
     }));
-};
+}
 
 Post.addPost = (data) => {
     return new Promise((async (resolve, reject) => {
@@ -40,7 +40,7 @@ Post.checkPostById = (id) =>{
         try {
             db.query('SELECT * FROM post WHERE id = ?', id, (err, res) => {
                 if (err) {
-                    Error.code1001(res);
+                   // Error.code1001(res);
                 } else {
                     resolve(res);
                 }
@@ -173,22 +173,6 @@ Post.getAll = ()=>{
                     resolve(user);
                 }
             });
-        } catch (e) {
-            reject(e);
-        }
-    }));
-}
-
-Post.getListPostByUserId = (id_user) =>{
-    return new Promise((async (resolve, reject) => {
-        try {
-            db.query(`SELECT * FROM post WHERE user_id ='${id_user}`, (err, res) => {
-                if (err) {
-                    Error.code1001(res);
-                } else {
-                    resolve(res);
-                }
-            })
         } catch (e) {
             reject(e);
         }

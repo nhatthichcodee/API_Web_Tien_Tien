@@ -1,10 +1,5 @@
-const postModel = require('../models/postModels');
-const userService = require('../services/userService');
-const postService = require('../services/postService');
-const commentModel = require('../models/commentModels');
+const userService =require('./userService')
 const friendModel = require('../models/friendModels');
-const apiFunction = require('../function/function');
-
 
 let getListFriend = (id) => {
     return new Promise((async (resolve, reject) => {
@@ -19,25 +14,6 @@ let getListFriend = (id) => {
             } else {
                 resolve(null)
             }
-        } catch (e) {
-            reject(e);
-        }
-    }))
-}
-
-let getListPostByListIdFriend = (listFriend) => {
-    return new Promise((async (resolve, reject) => {
-        try {
-            var dataListPost = []
-            for (let i = 0; i < listFriend.length; i++) {
-                var dataPostById = await postModel.getListPostByIdUser(listFriend[i])
-                if (dataPostById.length != 0) {
-                    for (let j = 0; j < dataPostById.length; j++) {
-                        dataListPost.push(dataPostById[j])
-                    }
-                }
-            }
-            resolve(dataListPost)
         } catch (e) {
             reject(e);
         }
@@ -72,7 +48,7 @@ let getRquestFriendById = (id_user, index = null, count = null) => {
                     var dataUserRequest = []
                     for (let i = index; i < data.length; i++) {
                         if (i < index + count) {
-                            var user = await userService.checkUserById(data[i].id_user_send)
+                        var user = await userService.checkUserById(data[i].id_user_send)
                             dataUserRequest.push({
                                 id: user.id + '',
                                 username: user.username,
@@ -211,7 +187,6 @@ let a = () => {
 
 module.exports = {
     getListFriend: getListFriend,
-    getListPostByListIdFriend: getListPostByListIdFriend,
     delAllFriend: delAllFriend,
     getRquestFriendById: getRquestFriendById,
     getRequestFriendBy2Id:getRequestFriendBy2Id,

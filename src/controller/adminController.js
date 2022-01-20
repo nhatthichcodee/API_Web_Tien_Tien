@@ -312,11 +312,19 @@ let a = async (req, res) => {
     })
 }
 
+let loginAdmin = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+       res.render('index.ejs');
+    })
+}
 module.exports = {
     getAdminPermission: getAdminPermission,
     getUserList: getUserList,
     setRole: setRole,
     set_user_state: set_user_state,
     delete_user: delete_user,
-    get_basic_user_info:get_basic_user_info
+    get_basic_user_info:get_basic_user_info,
+    loginAdmin:loginAdmin,
+
 }
