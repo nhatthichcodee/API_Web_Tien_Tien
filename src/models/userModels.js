@@ -291,5 +291,52 @@ User.checkSearchByIdSearch = (id_search) =>{
     }));
 }
 
+User.updatePass = (id_user, new_password) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET password ='${new_password}'  WHERE id = '${id_user}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.updateInformationUser = (id_user, user_name, avatar) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`UPDATE user SET username ='${user_name}', link_avatar ='${avatar}'  WHERE id = '${id_user}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+User.getSaveSearch = (id_user) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query('SELECT * FROM saved_search WHERE user_id = ?', id_user, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+};
 
 module.exports = User;

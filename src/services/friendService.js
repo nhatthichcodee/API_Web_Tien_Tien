@@ -36,29 +36,12 @@ let delAllFriend = (user_id) => {
     }));
 }
 
-
-let getRquestFriendById = (id_user, index = null, count = null) => {
+let getRquestFriendById = (id_user) => {
     return new Promise((async (resolve, reject) => {
         try {
             var data = await friendModel.getRquestFriendById(id_user)
             if (data.length != 0) {
-                if (index > data.length || index < 0) {
-                    resolve(null)
-                } else {
-                    var dataUserRequest = []
-                    for (let i = index; i < data.length; i++) {
-                        if (i < index + count) {
-                        var user = await userService.checkUserById(data[i].id_user_send)
-                            dataUserRequest.push({
-                                id: user.id + '',
-                                username: user.username,
-                                avatar: user.link_avatar,
-                                created: data[i].created + ''
-                            })
-                        }
-                    }
-                    resolve(dataUserRequest)
-                }
+                resolve(data)
             } else {
                 resolve(null)
             }
@@ -172,7 +155,6 @@ let getCountRequest = (user_id) => {
         }
     }));
 }
-
 
 let a = () => {
     return new Promise((async (resolve, reject) => {

@@ -375,6 +375,105 @@ let deleteSavedSearch = async (req, res) => {
     })
 }
 
+let changePassword = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var password = req.body.password;
+        var new_password = req.body.new_password
+        if (token == null || token == undefined || token == '' || password == null || password == undefined || password == '' || new_password == null || new_password == undefined || new_password == '') {
+            Error.code1002(res);
+        }
+        else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken != null) {
+                if (userCheckToken.password == apiFunction.MD5(password)) {
+                    var updatePass = await userService.updatePass(userCheckToken.id, apiFunction.MD5(new_password))
+                    if (updatePass == true) {
+                        res.send(JSON.stringify({
+                            code: "1000",
+                            message: 'ok',
+                        }));
+                    } else {
+                        Error.code1005(res)
+                    }
+                } else {
+                    Error.code1004(res)
+                }
+            } else {
+                Error.code9998(res)
+            }
+        }
+    })
+}
+
+let setUserInfo = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var username = req.body.username;
+        var avatar = req.body.avatar;
+        if (token == undefined || username == undefined || avatar == undefined || token == '' || username == '' || avatar == '' || token == null || username == null || avatar == null) {
+            Error.code1002(res);
+        }
+        else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken !== null) {
+                var userUpdateInformation = await userService.updateInformationUser(userCheckToken.id, username, avatar);
+                if (userUpdateInformation !== null) {
+                    var outPut = {
+                        "username": username,
+                        "avatar": avatar,
+                    }
+                    res.send(JSON.stringify({
+                        code: "1000",
+                        message: "ok",
+                        data: outPut,
+                    }));
+                } else {
+                    Error.code1005(res);
+                }
+            }
+            else {
+                Error.code9998(res);
+            }
+        }
+    })
+}
+
+let getSaveSearch = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var count = req.body.count;
+        var token = req.body.token;
+        var index = req.body.index;
+        if (count == undefined || token == undefined || index == undefined | count == '' || token == '' || index == '' ||count == null || token == null || index == null) {
+            Error.code1002(res);
+        }
+        else if ( index < 0) {
+            Error.code1004(res);
+        }
+        else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken !== null) {
+                var checkHistorySearch = await userService.getSaveSearch(userCheckToken.id, index, count);
+                if (checkHistorySearch.length == 0) {
+                    Error.code9994(res)
+                }else{
+                    res.send(JSON.stringify({
+                        code: "1000",
+                        message: 'OK',
+                        data: checkHistorySearch,
+                    }))
+                }
+            }
+            else {
+                Error.code9998(res);
+            }
+        }
+    })
+}
+
 let a = async (req, res) => {
     var upload = multer({ storage: storage }).none();
     upload(req, res, async (err) => {
@@ -388,5 +487,8 @@ module.exports = {
     setBlockDiary: setBlockDiary,
     getVerifyCode: getVerifyCode,
     checkVerifyCode: checkVerifyCode,
-    deleteSavedSearch: deleteSavedSearch
+    deleteSavedSearch: deleteSavedSearch,
+    changePassword: changePassword,
+    setUserInfo: setUserInfo,
+    getSaveSearch: getSaveSearch
 }

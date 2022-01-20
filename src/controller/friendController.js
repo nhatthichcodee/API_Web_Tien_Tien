@@ -1,68 +1,9 @@
-const postService = require('../services/postService');
 const userService = require('../services/userService');
-const chatService = require('../services/chatService');
-const adminService = require('../services/adminService');
-const commentService = require('../services/commentService');
 const friendService = require('../services/friendService');
-const apiFunction = require('../function/function');
 const Error = require('../module/error');
 const multer = require('multer');
 const con = require('../config/database');
 var storage = multer.memoryStorage();
-
-let search = async (req, res) => {
-    var upload = multer({ storage: storage }).none();
-    upload(req, res, async (err) => {
-        var token = req.body.token;
-        var keyword = req.body.keyword;
-        var index = req.body.index;
-        var count = req.body.count;
-        if (keyword == undefined || token == undefined || index == undefined || count == undefined || keyword == null || token == null || index == null || count == null || keyword == '' || token == '' || index == '' || count == '') {
-            Error.code1002(res);
-        } else {
-            var userCheckToken = await userService.checkUserByToken(token);
-            if (userCheckToken !== null) {
-                var dataListFriend = await friendService.getListFriend(userCheckToken.id)
-                if (dataListFriend == null) {
-                    Error.code9994(res)
-                } else {
-                    var dataListPost = await friendService.getListPostByListIdFriend(dataListFriend)
-                    if (dataListPost.length == 0) {
-                        Error.code9994(res)
-                    } else {
-                        for (let i = 0; i < dataListPost.length - 1; i++) {
-                            for (let j = i + 1; j < dataListPost.length; j++) {
-                                if (apiFunction.getScoreSearch(dataListPost[i].described, keyword) < apiFunction.getScoreSearch(dataListPost[j].described, keyword)) {
-                                    var dataTG = dataListPost[i]
-                                    dataListPost[i] = dataListPost[j]
-                                    dataListPost[j] = dataTG
-                                }
-                            }
-                        }
-                        var dataRes = []
-                        if (index < dataListPost.length) {
-                            for (let i = parseInt(index); i < dataListPost.length; i++) {
-                                if (i < parseInt(index) + parseInt(count)) {
-                                    dataRes.push(await postService.checkPostById(userCheckToken, dataListPost[i].id, 1))
-                                }
-                            }
-                            res.send(JSON.stringify({
-                                code: "1000",
-                                message: 'ok',
-                                data: dataRes
-                            }))
-                        } else {
-                            Error.code9994(res)
-                        }
-                    }
-                }
-            } else {
-                Error.code9998(res)
-            }
-        }
-    })
-}
-
 
 let get_user_friends = async (req, res) => {
     var upload = multer({ storage: storage }).none();
@@ -128,15 +69,31 @@ let getRquestFriend = async (req, res) => {
                         idUserCheck = user_id
                     }
                 }
-                var dataRequest = await friendService.getRquestFriendById(idUserCheck,parseInt(index),parseInt(count))
-                if (dataRequest == null) {
+                var data = await friendService.getRquestFriendById(idUserCheck)
+                if (data == null) {
                     Error.code9994(res)
                 }else{
+                    if (parseInt(index) > data.length || index < 0) {
+                        resolve(null)
+                    } else {
+                        var dataUserRequest = []
+                        for (let i = parseInt(index); i < data.length; i++) {
+                            if (i < parseInt(index) + parseInt(count)) {
+                            var user = await userService.checkUserById(data[i].id_user_send)
+                                dataUserRequest.push({
+                                    id: user.id + '',
+                                    username: user.username,
+                                    avatar: user.link_avatar,
+                                    created: data[i].created + ''
+                                })
+                            }
+                        }
+                    }
                     res.send(JSON.stringify({
                         code: "1000",
                         message: 'ok',
                         data: {
-                            friends:dataRequest
+                            friends:dataUserRequest
                         }
                     }))
                 }
@@ -315,7 +272,6 @@ let a = async (req, res) => {
 }
 
 module.exports = {
-    search: search,
     get_user_friends: get_user_friends,
     getRquestFriend:getRquestFriend,
     setAcceptFriend:setAcceptFriend,

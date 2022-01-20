@@ -56,6 +56,12 @@ let initWebRouter = function (app) {
   app.post('/api/user/getverifycode', userController.getVerifyCode);
   app.post('/api/user/checkverifycode', userController.checkVerifyCode);
   app.post('/api/user/del_saved_search',userController.deleteSavedSearch);
+
+  // tuan 8
+  app.post('/api/user/changepassword', userController.changePassword);
+  app.post('/api/user/setuserinfo', userController.setUserInfo);
+  // app.post('/api/user/get_suggested_list_friends',userController.getSuggestedListFriends)
+  app.post('/api/user/getsavedsearch', userController.getSaveSearch);
 }
 module.exports = {
     initWebRouter: initWebRouter,

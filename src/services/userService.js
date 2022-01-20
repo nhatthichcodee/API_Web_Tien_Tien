@@ -141,8 +141,6 @@ let checkUserByToken = (token) => {
     }));
 }
 
-
-
 let updateAdminUser = (id_admin, token) => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -223,7 +221,6 @@ let addBlockDiary = (id, dataBlockDiary) => {
         }
     }));
 }
-
 
 let delUser = (id_user) => {
     return new Promise((async (resolve, reject) => {
@@ -386,6 +383,64 @@ let deleteSearchById = (id_search) => {
     }));
 }
 
+let updatePass = (id_user, new_pass) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.updatePass(id_user, new_pass);
+            if (user.changedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let updateInformationUser = (id_user, username, avatar) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.updateInformationUser(id_user, username, avatar);
+            if (user.changedRows == 1) {
+                resolve(true);
+            }
+            else {
+                resolve(null)
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let getSaveSearch = (id_user, index, count) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let data = await userModel.getSaveSearch(id_user);
+            if (data != null) {
+                var dataListSavesearch = []
+                for (let i = index ; i < data.length; i++) {
+                    if (i < index + count) {
+                        dataListSavesearch.push({
+                            id:data[i].id +'',
+                            keyword:data[i].keyword,
+                            created:data[i].created +''
+                        })
+                    }
+                }
+                resolve(dataListSavesearch);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports={
     getAllUser:getAllUser,
     checkphoneuser:checkphoneuser,
@@ -406,5 +461,8 @@ module.exports={
     updateCode:updateCode,
     deleteAllSearch:deleteAllSearch,
     checkSearchByIdSearch:checkSearchByIdSearch,
-    deleteSearchById:deleteSearchById
+    deleteSearchById:deleteSearchById,
+    updatePass:updatePass,
+    updateInformationUser:updateInformationUser,
+    getSaveSearch:getSaveSearch
 }

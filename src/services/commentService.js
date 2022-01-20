@@ -134,7 +134,6 @@ let deleteCommentAdmin = (id_com) => {
     }))
 }
 
-
 let editComment = (id_com, comment) => {
     return new Promise((async (resolve, reject) => {
         try {
