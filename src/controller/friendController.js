@@ -189,11 +189,128 @@ let setAcceptFriend = async (req, res) => {
     })
 }
 
+let setRequestFriend = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var user_id = req.body.user_id;
+        if (token === undefined ||  user_id == undefined  || token === null || user_id == null || token === ''  || user_id == '' ) {
+            Error.code1002(res);
+        } else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            if (userCheckToken !== null) {
+                var user2 = await userService.checkUserById(user_id)
+                if(user2 == null){
+                    Error.code1004(res)
+                }else{
+                    // Check xem có phải là bạn bè
+                    var isFriend = await friendService.checkIsFriend(userCheckToken.id,user_id)
+                    if(isFriend == false){
+                        //Check xem đã request trước đây
+                        var isRequest = await friendService.getRequestFriendBy2Id(userCheckToken.id,user_id)
+                        if (isRequest == null) {
+                            // Check xem bị block
+                            if (user2.block_id.includes(userCheckToken.id.toString())) {
+                                Error.code1009(res)
+                            }else{
+                                // Check xem người kia có gửi ngược lại mình
+                                var isRequest2 = await friendService.getRequestFriendBy2Id(user_id,userCheckToken.id)
+                                if (isRequest2 == null) {
+                                    var setRequest = friendService.setRequest(userCheckToken.id,user_id)
+                                    if (setRequest != null) {
+                                        res.send(JSON.stringify({
+                                            code: "1000",
+                                            message: 'ok',
+                                            data:{
+                                                reqiested_friends: await friendService.getCountRequest(userCheckToken.id)+''
+                                            }
+                                        }))
+                                    }else{
+                                        Error.code1005(res);
+                                    }
+                                }else{
+                                    // Nếu có gửi ngược lại
+                                    await friendService.addFriend({
+                                        id_user_1:parseInt(user_id),
+                                        id_user_2:userCheckToken.id
+                                    })
+                                    var deleteRequest = await friendService.deleteRequestById(isRequest2.id)
+                                    if (deleteRequest == true) {
+                                        res.send(JSON.stringify({
+                                            code: "1000",
+                                            message: 'ok',
+                                            data:{
+                                                reqiested_friends: await friendService.getCountRequest(userCheckToken.id) +''
+                                            }
+                                        }))
+                                    }else{
+                                        Error.code1005(res)
+                                    }
+                                }
+                            }
+                        }else{
+                            Error.code1010(res)
+                        }
+                    }else{
+                        Error.code1009(res)
+                    }
+                }
+            }else{
+                Error.code9998(res)
+            }
+        }
+    })
+}
+
+let getUserInfo = async (req, res) => {
+    var upload = multer({ storage: storage }).none();
+    upload(req, res, async (err) => {
+        var token = req.body.token;
+        var user_id = req.body.user_id;
+        if (token === undefined || token === '' || token === null) {
+            Error.code1002(res);
+        } else {
+            var userCheckToken = await userService.checkUserByToken(token);
+            var isRes = false;
+            if (userCheckToken !== null) {
+                var idGetInfo = userCheckToken.id
+                if (!(user_id === undefined || user_id === '' || user_id === null)) {
+                    var user2 = await userService.checkUserById(user_id);
+                    if(user2 == null){
+                        Error.code1004(res)
+                    }else{
+                        var isFriend = await friendService.checkIsFriend(userCheckToken.id,user_id)
+                        if (isFriend == true || userCheckToken.role > user2.role) {
+                            idGetInfo = user2.id
+                        }else{
+                            isRes = true
+                            Error.code1009(res)
+                        }
+                    }
+                }
+                if (isRes == false) {
+                    var dataUser = await userService.getUserInfo(userCheckToken.id,idGetInfo)
+                    if (dataUser == null) {
+                        Error.code1005(res)
+                    }else{
+                        res.send(JSON.stringify({
+                            code: "1000",
+                            message: 'ok',
+                            data:dataUser
+                        }))
+                    }
+                }
+            } else{
+                Error.code9998(res)
+            }
+        }
+    })
+}
 
 let a = async (req, res) => {
     var upload = multer({ storage: storage }).none();
     upload(req, res, async (err) => {
-
+        
     })
 }
 
@@ -201,5 +318,7 @@ module.exports = {
     search: search,
     get_user_friends: get_user_friends,
     getRquestFriend:getRquestFriend,
-    setAcceptFriend:setAcceptFriend
+    setAcceptFriend:setAcceptFriend,
+    setRequestFriend:setRequestFriend,
+    getUserInfo:getUserInfo
 }

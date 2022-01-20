@@ -220,5 +220,5 @@ module.exports = {
     getListConversation: getListConversation,
     getConversation: getConversation,
     deleteMessage: deleteMessage,
-    deleteConversation:deleteConversation
+    deleteConversation:deleteConversation,
 }

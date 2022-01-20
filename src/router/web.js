@@ -45,10 +45,10 @@ let initWebRouter = function (app) {
   app.post('/api/admin/get_basic_user_info', adminController.get_basic_user_info)
 
   // Tuần 6
-  //app.post('/api/friend/set_request_friend', friendscontroller.setRquestFriend);
   app.post('/api/friend/get_requested_friend', friendsController.getRquestFriend);
   app.post('/api/friend/set_accept_friend', friendsController.setAcceptFriend);
-  //app.post('/friend/getuserinfo', friendscontroller.getUserInfo);
+  app.post('/api/friend/set_request_friend', friendsController.setRequestFriend);
+  app.post('/api/friend/getuserinfo', friendsController.getUserInfo);
 }
 module.exports = {
     initWebRouter: initWebRouter,

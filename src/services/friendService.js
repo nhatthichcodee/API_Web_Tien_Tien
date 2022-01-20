@@ -139,6 +139,65 @@ let deleteRequestById = (id_request) => {
     }));
 }
 
+let checkIsFriend = (id_user_1, id_user_2) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            if (id_user_1 +'' == id_user_2 +'') {
+                resolve(false)
+            }else{
+                var dataFriend = await friendModel.checkIsFriend(id_user_1,id_user_2)
+                if (dataFriend.length != 0) {
+                    resolve(true)
+                } else {
+                    resolve(false)
+                }
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }))
+}
+
+let setRequest = (id_user_send,id_user_receiver) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let date = new Date();
+            let seconds = date.getTime()/1000 | 0;
+            var data = {
+                id_user_send:id_user_send,
+                id_user_receiver:id_user_receiver,
+                created:seconds+''
+            }
+            let friend = await friendModel.setRequest(data);
+            if (friend.id != 0) {
+                resolve(friend);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+let getCountRequest = (user_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            let countRequest = await friendModel.getCountRequest(user_id);
+            if (countRequest != null) {
+                resolve(countRequest);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+
 let a = () => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -149,6 +208,7 @@ let a = () => {
     }))
 }
 
+
 module.exports = {
     getListFriend: getListFriend,
     getListPostByListIdFriend: getListPostByListIdFriend,
@@ -156,5 +216,8 @@ module.exports = {
     getRquestFriendById: getRquestFriendById,
     getRequestFriendBy2Id:getRequestFriendBy2Id,
     addFriend:addFriend,
-    deleteRequestById:deleteRequestById
+    deleteRequestById:deleteRequestById,
+    checkIsFriend:checkIsFriend,
+    setRequest:setRequest,
+    getCountRequest:getCountRequest,
 }

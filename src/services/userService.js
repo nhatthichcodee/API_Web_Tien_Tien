@@ -1,5 +1,6 @@
 
 const userModel= require('../models/userModels');
+const friendService = require('./friendService');
 let getAllUser = () => {
     return new Promise((async (resolve, reject) => {
         try {
@@ -235,6 +236,36 @@ let delUser = (id_user) => {
     }));
 }
 
+let getUserInfo = (user_token_id , user_id) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            let user = await userModel.checkUserById(user_id);
+            if (user.length != 0) {
+                user = user[0]
+                var numberFriend = await friendService.getListFriend(user.id)
+                numberFriend = numberFriend == null ? 0 : numberFriend.length
+                var isFriend = await friendService.checkIsFriend(user_token_id,user_id) == true ? 1 : 0
+                var isOnl = user.token == null || user.token =='null' ? 0 : 1
+                var dataRes = {
+                    id:user.id +'',
+                    username:user.username,
+                    avatar:user.link_avatar,
+                    link: 'user/' + user.id+'',
+                    listing: numberFriend +'',
+                    is_friend:isFriend+'',
+                    online:isOnl+''
+                }
+                resolve(dataRes);
+            }
+            else {
+                resolve(null);
+            }
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports={
     getAllUser:getAllUser,
     checkphoneuser:checkphoneuser,
@@ -248,5 +279,6 @@ module.exports={
     setRole:setRole,
     setState:setState,
     addBlock:addBlock,
-    delUser:delUser
+    delUser:delUser,
+    getUserInfo:getUserInfo
 }

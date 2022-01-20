@@ -99,4 +99,52 @@ Friend.deleteRequestById = (id_request) =>{
     }));
 }
 
+Friend.checkIsFriend = (id_user_1, id_user_2) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`SELECT * FROM friend  WHERE id_user_1 = '${id_user_1}' AND id_user_2 = '${id_user_2}' OR id_user_1 = '${id_user_2}' AND id_user_2 = '${id_user_1}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+Friend.setRequest = (data) =>{
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query("INSERT INTO requested_friend SET ?", data, (err, res) => {
+                if (err) {
+                    resolve(null);
+                } else {
+                    resolve({ id: res.insertId, ...data });
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
+Friend.getCountRequest = (user_id) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`SELECT COUNT(id) AS NumberOfRequest FROM requested_friend WHERE id_user_send = '${user_id}'`, (err, res) => {
+                if (err) {
+                    Error.code1001(res);
+                } else {
+                    resolve(res[0].NumberOfRequest);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports = Friend;
