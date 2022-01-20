@@ -1,15 +1,34 @@
-const userController= require('../controller/userController');
-const postController= require('../controller/postController');
-const commentController= require('../controller/commentController');
-const chatController= require('../controller/chatController');
-const adminController= require('../controller/adminController');
+const passport = require('passport')
+const flash = require('express-flash')
+const session = require('express-session')
+const methodOverride = require('method-override')
+const initializePassport = require('../config/passport-config')
+
+const userController = require('../controller/userController');
+const postController = require('../controller/postController');
+const commentController = require('../controller/commentController');
+const chatController = require('../controller/chatController');
+const adminController = require('../controller/adminController');
 const friendsController = require('../controller/friendController');
 
+initializePassport(
+  passport
+)
+
 let initWebRouter = function (app) {
+  app.use(flash())
+  app.use(session({
+    secret: "api_web_tien_tien",
+    resave: false,
+    saveUninitialized: false
+  }))
+  app.use(passport.initialize())
+  app.use(passport.session())
+  app.use(methodOverride('_method'))
 
   // Tuần 1
-  app.post('/api/user/sign_up', userController.signUp); 
-  app.post('/api/user/sign_in',userController.signIn)
+  app.post('/api/user/sign_up', userController.signUp);
+  app.post('/api/user/sign_in', userController.signIn)
   app.post('/api/user/sign_out', userController.signOut);
 
   // Tuần 2
@@ -36,7 +55,8 @@ let initWebRouter = function (app) {
   app.post('/api/admin/getAdminPermission', adminController.getAdminPermission);
   app.post('/api/admin/getUserList', adminController.getUserList);
   app.post('/api/admin/setrole', adminController.setRole);
-  app.get('/api/admin/login', adminController.loginAdmin);
+
+
   // Tuần 5
   app.post('/api/post/search', postController.search);
   app.post('/api/friend/get_user_friends', friendsController.get_user_friends)
@@ -55,14 +75,48 @@ let initWebRouter = function (app) {
   app.post('/api/user/setblockdiary', userController.setBlockDiary);
   app.post('/api/user/getverifycode', userController.getVerifyCode);
   app.post('/api/user/checkverifycode', userController.checkVerifyCode);
-  app.post('/api/user/del_saved_search',userController.deleteSavedSearch);
+  app.post('/api/user/del_saved_search', userController.deleteSavedSearch);
 
   // tuan 8
   app.post('/api/user/changepassword', userController.changePassword);
   app.post('/api/user/setuserinfo', userController.setUserInfo);
   // app.post('/api/user/get_suggested_list_friends',userController.getSuggestedListFriends)
   app.post('/api/user/getsavedsearch', userController.getSaveSearch);
+
+  // Admin
+  app.get('/adminlogin',checkNotAuthenticated,(req,res) =>{
+    res.render('loginadmin.ejs');
+  })
+
+  app.get('/',checkAuthenticated,(req,res) =>{
+    res.render('index.ejs', {name: req.user.phonenumber});
+  })
+
+  app.post('/adminlogin',checkNotAuthenticated, passport.authenticate('local',{
+    successRedirect: '/',
+    failureRedirect:'/adminlogin',
+    failureFlash: true
+  }));
+
+  app.delete('/logout',(req,res) =>{
+    req.logOut()
+    res.redirect('/adminlogin')
+  })
+
+  function checkAuthenticated(req, res, next) {
+     if (req.isAuthenticated()) {
+       return next()
+     }
+     res.redirect('/adminlogin')
+   }
+ 
+   function checkNotAuthenticated(req, res, next) {
+     if (req.isAuthenticated()) {
+       return res.redirect('/')
+     }
+     next()
+   }
 }
 module.exports = {
-    initWebRouter: initWebRouter,
+  initWebRouter: initWebRouter,
 }

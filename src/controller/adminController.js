@@ -312,12 +312,18 @@ let a = async (req, res) => {
     })
 }
 
-let loginAdmin = async (req, res) => {
-    var upload = multer({ storage: storage }).none();
-    upload(req, res, async (err) => {
-       res.render('index.ejs');
-    })
-}
+
+// let loginAdmin = async (req, res) => {
+//     res.render('index.ejs');
+// }
+
+// let postLoginAdmin = async (req, res) => {
+//     req.user;
+//     console.log(req.body.phoneNumber);
+//    // res.render('index.ejs');
+// }
+
+
 module.exports = {
     getAdminPermission: getAdminPermission,
     getUserList: getUserList,
@@ -325,6 +331,6 @@ module.exports = {
     set_user_state: set_user_state,
     delete_user: delete_user,
     get_basic_user_info:get_basic_user_info,
-    loginAdmin:loginAdmin,
-
+    // loginAdmin:loginAdmin,
+    // postLoginAdmin:postLoginAdmin,
 }
