@@ -287,19 +287,19 @@ let get_basic_user_info = async (req, res) => {
                             res.send(JSON.stringify({
                                 code: "1000",
                                 message: 'ok',
-                                data:{
-                                    user_id:user2.id+'',
+                                data: {
+                                    user_id: user2.id + '',
                                     user_name: user2.username,
-                                    isactive:user2.state+'',
-                                    phonenumber:user2.phonenumber+''
+                                    isactive: user2.state + '',
+                                    phonenumber: user2.phonenumber + ''
                                 }
                             }))
                         }
                     }
-                }else{
+                } else {
                     Error.code1004(res)
                 }
-            }else{
+            } else {
                 Error.code9998(res)
             }
         }
@@ -313,16 +313,28 @@ let a = async (req, res) => {
 }
 
 
-// let loginAdmin = async (req, res) => {
-//     res.render('index.ejs');
-// }
+let dashboardAdmin = async (req, res) => {
+    var dataAllUser = await userService.getAllUser()
+    var dataLikePost = await postService.getAllPost()
+    res.render('index.ejs', {
+        name: req.user.phonenumber,
+        numberuser: dataAllUser.length,
+        numberpost: dataLikePost.length
+    });
+}
 
-// let postLoginAdmin = async (req, res) => {
-//     req.user;
-//     console.log(req.body.phoneNumber);
-//    // res.render('index.ejs');
-// }
-
+let getTableAdmin = async (req, res) => {
+    var dataAllUser = await userService.getAllUser()
+    var data = '<tbody>'
+    for (let i = 0; i < dataAllUser.length; i++) {
+        data += '<tr> <td>' + dataAllUser[i].id + '</td>' + '<td>' + dataAllUser[i].username + '</td>' + '<td>' + dataAllUser[i].phonenumber + '</td>' + '<td>' + dataAllUser[i].link_avatar + '</td>'+ '<td>' + dataAllUser[i].role + '</td>' + '</tr>'
+    }
+    data += '</tbody>'
+    res.render('tables.ejs', {
+        name: req.user.phonenumber,
+        datatables:data
+    });
+}
 
 module.exports = {
     getAdminPermission: getAdminPermission,
@@ -330,7 +342,7 @@ module.exports = {
     setRole: setRole,
     set_user_state: set_user_state,
     delete_user: delete_user,
-    get_basic_user_info:get_basic_user_info,
-    // loginAdmin:loginAdmin,
-    // postLoginAdmin:postLoginAdmin,
+    get_basic_user_info: get_basic_user_info,
+    dashboardAdmin: dashboardAdmin,
+    getTableAdmin: getTableAdmin
 }

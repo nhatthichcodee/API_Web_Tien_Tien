@@ -84,39 +84,48 @@ let initWebRouter = function (app) {
   app.post('/api/user/getsavedsearch', userController.getSaveSearch);
 
   // Admin
-  app.get('/adminlogin',checkNotAuthenticated,(req,res) =>{
+  app.get('/adminlogin', checkNotAuthenticated, (req, res) => {
     res.render('loginadmin.ejs');
   })
 
-  app.get('/',checkAuthenticated,(req,res) =>{
-    res.render('index.ejs', {name: req.user.phonenumber});
+  app.get('/adminpage', checkAuthenticated, (req, res) => {
+    if (req.user.role == 0) {
+      chatController.toChatPage(req,res)
+    }else{
+      adminController.dashboardAdmin(req, res);
+    }
   })
 
-  app.post('/adminlogin',checkNotAuthenticated, passport.authenticate('local',{
-    successRedirect: '/',
-    failureRedirect:'/adminlogin',
+  app.post('/adminlogin', checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: '/adminpage',
+    failureRedirect: '/adminlogin',
     failureFlash: true
   }));
 
-  app.delete('/logout',(req,res) =>{
+  app.delete('/logout', (req, res) => {
     req.logOut()
     res.redirect('/adminlogin')
   })
 
+  app.get('/tables', checkAuthenticated, (req, res) => {
+    adminController.getTableAdmin(req, res);
+  })
+
   function checkAuthenticated(req, res, next) {
-     if (req.isAuthenticated()) {
-       return next()
-     }
-     res.redirect('/adminlogin')
-   }
- 
-   function checkNotAuthenticated(req, res, next) {
-     if (req.isAuthenticated()) {
-       return res.redirect('/')
-     }
-     next()
-   }
+    if (req.isAuthenticated()) {
+      return next()
+    }
+    res.redirect('/adminlogin')
+  }
+
+  function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/adminpage')
+    }
+    next()
+  }
 }
+
 module.exports = {
   initWebRouter: initWebRouter,
 }

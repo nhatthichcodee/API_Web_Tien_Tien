@@ -474,6 +474,8 @@ let getSaveSearch = async (req, res) => {
     })
 }
 
+
+
 let a = async (req, res) => {
     var upload = multer({ storage: storage }).none();
     upload(req, res, async (err) => {
@@ -490,5 +492,5 @@ module.exports = {
     deleteSavedSearch: deleteSavedSearch,
     changePassword: changePassword,
     setUserInfo: setUserInfo,
-    getSaveSearch: getSaveSearch
+    getSaveSearch: getSaveSearch,
 }

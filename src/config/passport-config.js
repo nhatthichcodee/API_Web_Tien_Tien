@@ -1,5 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy
-const UserService  = require('../services/userService')
+const UserService = require('../services/userService')
 const apiFunction = require('../function/function')
 function initialize(passport) {
   const authenticateUser = async (phonenumber, password, done) => {
@@ -9,13 +9,9 @@ function initialize(passport) {
     }
     try {
       if (apiFunction.MD5(password) == user.password) {
-          if (user.role > 0) {
-            return done(null, user)
-          }else{
-            return done(null, false, { message: 'Không phải là admin'})
-          }
+        return done(null, user)
       } else {
-        return done(null, false, { message: 'Mật khẩu sai'})
+        return done(null, false, { message: 'Mật khẩu sai' })
       }
     } catch (e) {
       return done(e)
@@ -24,9 +20,9 @@ function initialize(passport) {
 
   passport.use(new LocalStrategy({ usernameField: 'phonenumber' }, authenticateUser))
   passport.serializeUser((user, done) => done(null, user.id))
-  passport.deserializeUser(async(id, done) => {
-    var user= await UserService.checkUserById(id);
-    return done(null,user)
+  passport.deserializeUser(async (id, done) => {
+    var user = await UserService.checkUserById(id);
+    return done(null, user)
   })
 }
 

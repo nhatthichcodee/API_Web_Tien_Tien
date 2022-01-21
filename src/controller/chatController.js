@@ -209,6 +209,10 @@ let deleteConversation = async (req, res) => {
     })
 }
 
+let toChatPage = async (req, res) => {
+    res.render('chat.ejs', {});
+}
+
 let a = async (req, res) => {
     var upload = multer({ storage: storage }).none();
     upload(req, res, async (err) => {
@@ -221,4 +225,5 @@ module.exports = {
     getConversation: getConversation,
     deleteMessage: deleteMessage,
     deleteConversation:deleteConversation,
+    toChatPage:toChatPage
 }
