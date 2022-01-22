@@ -147,4 +147,20 @@ Friend.getCountRequest = (user_id) => {
     }));
 }
 
+Friend.getCountSameFriend = (id_user_1,id_user_2) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query(`SELECT COUNT(id) AS NumberOfSameFriend FROM friend WHERE id_user_1 = '${id_user_1}' AND id_user_2 = '${id_user_2}' OR id_user_1 = '${id_user_2}' AND id_user_2 = '${id_user_1}'`, (err, res) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    resolve(res[0].NumberOfSameFriend);
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+}
+
 module.exports = Friend;

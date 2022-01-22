@@ -156,14 +156,21 @@ let getCountRequest = (user_id) => {
     }));
 }
 
-let a = () => {
+let getCountSameFriend = (id_user_1,id_user_2) => {
     return new Promise((async (resolve, reject) => {
         try {
-
+            let countRequest = await friendModel.getCountSameFriend(id_user_1,id_user_2);
+            console.log(countRequest)
+            if (countRequest != null) {
+                resolve(countRequest);
+            }
+            else {
+                resolve(null);
+            }
         } catch (e) {
             reject(e);
         }
-    }))
+    }));
 }
 
 
@@ -177,4 +184,5 @@ module.exports = {
     checkIsFriend:checkIsFriend,
     setRequest:setRequest,
     getCountRequest:getCountRequest,
+    getCountSameFriend:getCountSameFriend
 }

@@ -86,7 +86,7 @@ let initWebRouter = function (app) {
   // tuan 8
   app.post('/api/user/changepassword', userController.changePassword);
   app.post('/api/user/setuserinfo', userController.setUserInfo);
-  // app.post('/api/user/get_suggested_list_friends',userController.getSuggestedListFriends)
+  app.post('/api/user/get_suggested_list_friends',friendsController.getSuggestedListFriends)
   app.post('/api/user/getsavedsearch', userController.getSaveSearch);
 
   // Admin

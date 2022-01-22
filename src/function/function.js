@@ -29,9 +29,20 @@ let getRandom = (min,max) =>{
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+let getSame = (arr1,arr2) =>{
+    var same = 0
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr2.includes(arr1[i])) {
+            same++
+        }
+    }
+    return same;
+}
+
 module.exports={
     MD5:MD5,
     getDate:getDate,
     getScoreSearch:getScoreSearch,
-    getRandom:getRandom
+    getRandom:getRandom,
+    getSame:getSame
 }
