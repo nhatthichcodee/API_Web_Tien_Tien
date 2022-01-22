@@ -162,4 +162,21 @@ Chat.deleteConversation = (conversation_id) => {
         }
     }));
 }
+
+Chat.addChat = (data) => {
+    return new Promise((async (resolve, reject) => {
+        try {
+            db.query("INSERT INTO chat SET ?", data, (err, res) => {
+                if (err) {
+                    resolve(null);
+                } else {
+                    resolve({ id: res.insertId, ...data });
+                }
+            })
+        } catch (e) {
+            reject(e);
+        }
+    }));
+};
+
 module.exports = Chat;

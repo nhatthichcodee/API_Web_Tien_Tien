@@ -16,6 +16,12 @@ initializePassport(
 )
 
 let initWebRouter = function (app) {
+
+  var server = require("http").createServer(app);
+  const { Server } = require("socket.io")
+  const io = new Server(server)
+  chatController.initIO(io);
+
   app.use(flash())
   app.use(session({
     secret: "api_web_tien_tien",
@@ -111,6 +117,12 @@ let initWebRouter = function (app) {
     adminController.getTableAdmin(req, res);
   })
 
+  // Phần chat 
+
+  app.get('/conversation', checkAuthenticated, (req, res) => {
+    chatController.getChat2User(req, res);
+  })
+
   function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
       return next()
@@ -124,6 +136,11 @@ let initWebRouter = function (app) {
     }
     next()
   }
+
+  var port = 3000;
+  server.listen(port, function () {
+    console.log("Listening to port " + port);
+  });
 }
 
 module.exports = {

@@ -6,6 +6,7 @@ const apiFunction = require('../function/function');
 const Error = require('../module/error');
 const multer = require('multer');
 const con = require('../config/database');
+const { get_user_friends } = require('./friendController');
 var storage = multer.memoryStorage();
 
 
@@ -210,20 +211,81 @@ let deleteConversation = async (req, res) => {
 }
 
 let toChatPage = async (req, res) => {
-    res.render('chat.ejs', {});
+    var dataListConversation = await chatService.getListConversationByIDNoIndex(req.user.id) // Lấy ra cuộc trò chuyện có mình
+    var listData = []
+    for (let i = 0; i < dataListConversation.length; i++) {
+        var userData = await userService.checkUserById(dataListConversation[i].partner.id)
+        listData.push({
+            phonenumber: userData.phonenumber,
+            lastmess:dataListConversation[i].lastmessage.message
+        })
+    }
+    res.render('chat.ejs', {
+        phonenumber: req.user.phonenumber,
+        dataCoversation: listData
+    });
 }
 
-let a = async (req, res) => {
-    var upload = multer({ storage: storage }).none();
-    upload(req, res, async (err) => {
-
-    })
+let getChat2User = async (req, res) => {
+    var dataListConversation = await chatService.getListConversationByIDNoIndex(req.user.id) // Lấy ra list conversation
+    var listData = []
+    var listDataChat = []
+    for (let i = 0; i < dataListConversation.length; i++) {
+        var userData = await userService.checkUserById(dataListConversation[i].partner.id) // Lấy ra data của người mình nhắn tin
+        listData.push({
+            phonenumber: userData.phonenumber,
+            lastmess:dataListConversation[i].lastmessage.message
+        })
+    }
+    var userFriend = await userService.checkphoneuser(req.query.phonenumber)
+    var dataConversation = await chatService.getConversationIdByUser(userFriend.id,req.user.id)
+    var dataChat2User = await chatService.getChatByConversationIdNoIndex(dataConversation,req.user.id,userData.id) // Lấy ra chat của 2 người
+    for (let i = 0; i < dataChat2User.length; i++) {
+        var user_sender = await userService.checkUserById(dataChat2User[i].conversation.sender.id) // Người gửi
+        listDataChat.push({
+            isSend: user_sender.id == req.user.id ? "sent" : "replies",
+            mess: dataChat2User[i].conversation.message,
+        })
+    } 
+    res.render('chat2user.ejs', {
+        phonenumber: req.user.phonenumber,
+        phonefriend:req.query.phonenumber,
+        idroom: dataConversation,
+        dataCoversation: listData,
+        dataChat:listDataChat
+    });
 }
+
+let initIO = (io) => {
+    io.on("connection", function (socket) {
+        socket.on('joinRoom', data => {
+        socket.join(data.idroom);
+        });
+        socket.on('on-chat', async (datareq) => {
+            console.log(datareq)
+            var dataUserSend = await userService.checkphoneuser(datareq.phoneuser)
+            let date = new Date();
+            let seconds = date.getTime()/1000 | 0;
+            var dataChat = {
+                id_conversation:datareq.idroom,
+                id_sender:dataUserSend.id,
+                message:datareq.message,
+                created:seconds,
+                unread:1
+            }
+            await chatService.addChat(dataChat)
+            io.to(datareq.idroom).emit('message', datareq);
+        })
+    });
+}
+
 
 module.exports = {
     getListConversation: getListConversation,
     getConversation: getConversation,
     deleteMessage: deleteMessage,
     deleteConversation:deleteConversation,
-    toChatPage:toChatPage
+    toChatPage:toChatPage,
+    getChat2User:getChat2User,
+    initIO:initIO
 }
