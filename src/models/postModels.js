@@ -67,10 +67,10 @@ Post.getCountPost = () =>{
     }));
 }
 
-Post.updatePost = (id,desPost,mediaPost) =>{
+Post.updatePost = (id,desPost,mediaPost, timedit) =>{
     return new Promise((async (resolve, reject) => {
         try {
-            db.query(`UPDATE post SET media ='${mediaPost}' , described = '${desPost}'  WHERE id = '${id}'`, (err, res) => {
+            db.query(`UPDATE post SET media ='${mediaPost}' , described = '${desPost}', modified = '${timedit}'  WHERE id = '${id}'`, (err, res) => {
                 if (err) {
                     Error.code1001(res);
                 } else {

@@ -118,10 +118,10 @@ let getCountPost = () => {
     }));
 }
 
-let updatePost = (id, desPost, mediaPost) => {
+let updatePost = (id, desPost, mediaPost, timedit) => {
     return new Promise((async (resolve, reject) => {
         try {
-            let post = await postModel.updatePost(id, desPost, mediaPost);
+            let post = await postModel.updatePost(id, desPost, mediaPost,timedit);
             if (post.affectedRows == 1) {
                 resolve(true);
             }

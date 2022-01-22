@@ -211,6 +211,8 @@ let editPost = async (req, res) => {
         } else {
             var userCheckToken = await userService.checkUserByToken(token);
             if (userCheckToken != null) {
+                let date = new Date();
+                let seconds = date.getTime()/1000 | 0;
                 var postCheckId = await postService.checkPostById(userCheckToken, id, 2);
                 if (postCheckId.user_id == userCheckToken.id) {
                     var described = req.body.described;
@@ -232,7 +234,7 @@ let editPost = async (req, res) => {
                             if (totalVideo > 10485760) {
                                 Error.code1006(res)
                             }
-                            var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media))
+                            var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media),seconds)
                             if (updatePost == true) {
                                 res.send(JSON.stringify({
                                     code: "1000",
@@ -240,7 +242,7 @@ let editPost = async (req, res) => {
                                 }))
                             }
                         } else {
-                            var updatePost = await postService.updatePost(id, postCheckId.described, postCheckId.media)
+                            var updatePost = await postService.updatePost(id, postCheckId.described, postCheckId.media,seconds)
                             if (updatePost == true) {
                                 res.send(JSON.stringify({
                                     code: "1000",
@@ -270,7 +272,7 @@ let editPost = async (req, res) => {
                             if (Media.image.length > 4) {
                                 Error.code1008(res)
                             } else {
-                                var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media))
+                                var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media),seconds)
                                 if (updatePost == true) {
                                     res.send(JSON.stringify({
                                         code: "1000",
@@ -279,7 +281,7 @@ let editPost = async (req, res) => {
                                 }
                             }
                         } else {
-                            var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media))
+                            var updatePost = await postService.updatePost(id, postCheckId.described, JSON.stringify(Media),seconds)
                             if (updatePost == true) {
                                 res.send(JSON.stringify({
                                     code: "1000",
